@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <pack>nuget</pack>
@@ -6,7 +6,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Version>1.0.1-temp</Version>
+        <Version>1.0.1</Version>
         <LangVersion>9.0</LangVersion>
     </PropertyGroup>
 
