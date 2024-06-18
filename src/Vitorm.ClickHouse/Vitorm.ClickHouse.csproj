@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <pack>nuget</pack>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Version>1.0.0-temp</Version>
+        <LangVersion>9.0</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>Lith</Authors>
+        <Description>orm for ClickHouse</Description>
+        <PackageProjectUrl>https://github.com/VitormLib/Vitorm.ClickHouse</PackageProjectUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--<PackageReference Include="ClickHouse.Ado" Version="2.0.5" />-->
+        <PackageReference Include="ClickHouse.Client" Version="7.5.0" /> 
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Vitorm\src\Vitorm\Vitorm.csproj" />
+    </ItemGroup>
+
+</Project>
