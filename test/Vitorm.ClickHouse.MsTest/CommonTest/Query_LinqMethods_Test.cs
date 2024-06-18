@@ -18,7 +18,7 @@ namespace Vitorm.MsTest.CommonTest
             var userQuery = dbContext.Query<User>();
 
             {
-                var userList = userQuery.OrderBy(m => m.id).ToList();         
+                var userList = userQuery.OrderBy(m => m.id).ToList();
                 Assert.AreEqual(6, userList.Count);
                 Assert.AreEqual(1, userList.First().id);
                 Assert.AreEqual(6, userList.Last().id);
@@ -279,7 +279,7 @@ namespace Vitorm.MsTest.CommonTest
             var userQuery = dbContext.Query<User>();
 
             {
-                var userList = userQuery.OrderBy(m=>m.id).ToArray();
+                var userList = userQuery.OrderBy(m => m.id).ToArray();
                 Assert.AreEqual(6, userList.Length);
                 Assert.AreEqual(1, userList.First().id);
                 Assert.AreEqual(6, userList.Last().id);

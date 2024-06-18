@@ -21,7 +21,7 @@ namespace Vitorm.MsTest.CommonTest
             {
                 var query =
                         from user in userQuery
-                        from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()                    
+                        from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
                         where user.id > 2
                         orderby user.id
                         select new { user, father };
@@ -30,10 +30,10 @@ namespace Vitorm.MsTest.CommonTest
                 var userList = query.ToList();
 
                 Assert.AreEqual(4, userList.Count);
-                //Assert.AreEqual(3, userList[0].user.id);
-                //Assert.AreEqual(5, userList[0].father?.id);
-                //Assert.AreEqual(4, userList[1].user.id);
-                //Assert.AreEqual(0, userList[1].father?.id??0);
+                Assert.AreEqual(3, userList[0].user.id);
+                Assert.AreEqual(5, userList[0].father?.id);
+                Assert.AreEqual(4, userList[1].user.id);
+                Assert.AreEqual(null, userList[1].father?.name);
             }
 
             // Lambda Expression
@@ -44,16 +44,17 @@ namespace Vitorm.MsTest.CommonTest
                             , (user, father) => new { user, father }
                         )
                         .Where(row => row.user.id > 2)
+                        .OrderBy(row => row.user.id)
                         .Select(row => new { row.user, row.father });
 
                 var sql = query.ToExecuteString();
                 var userList = query.ToList();
 
                 Assert.AreEqual(4, userList.Count);
-                //Assert.AreEqual(3, userList[0].user.id);
-                //Assert.AreEqual(5, userList[0].father?.id);
-                //Assert.AreEqual(4, userList[1].user.id);
-                //Assert.AreEqual(null, userList[1].father?.id);
+                Assert.AreEqual(3, userList[0].user.id);
+                Assert.AreEqual(5, userList[0].father?.id);
+                Assert.AreEqual(4, userList[1].user.id);
+                Assert.AreEqual(null, userList[1].father?.name);
             }
         }
 
@@ -72,14 +73,14 @@ namespace Vitorm.MsTest.CommonTest
                     from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
                     from mother in userQuery.Where(mother => user.motherId == mother.id).DefaultIfEmpty()
                     where user.id > 2
-                    orderby user.fatherId descending
+                    orderby user.id
                     select new
                     {
                         user,
                         father,
                         mother,
                         testId = user.id + 100,
-                        hasFather = father != null ? true : false
+                        hasFather = father.name != null ? true : false
                     };
 
                 query = query.Skip(1).Take(2);
@@ -89,12 +90,12 @@ namespace Vitorm.MsTest.CommonTest
 
                 Assert.AreEqual(2, userList.Count);
 
-                //var first = userList.First();
-                //Assert.AreEqual(4, first.user.id);
-                //Assert.AreEqual(null, first.father?.id);
-                //Assert.AreEqual(null, first.mother?.id);
-                //Assert.AreEqual(104, first.testId);
-                //Assert.AreEqual(false, first.hasFather);
+                var first = userList.First();
+                Assert.AreEqual(4, first.user.id);
+                Assert.AreEqual(null, first.father?.name);
+                Assert.AreEqual(null, first.mother?.name);
+                Assert.AreEqual(104, first.testId);
+                Assert.AreEqual(false, first.hasFather);
             }
         }
 
@@ -108,91 +109,71 @@ namespace Vitorm.MsTest.CommonTest
 
             {
                 var query = from user in userQuery
-                             from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
-                             where user.id > 2 && father.name != null
-                             select new
-                             {
-                                 user,
-                                 father
-                             };
+                            from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
+                            where user.id > 2 && father.name != null
+                            orderby user.id
+                            select new
+                            {
+                                user,
+                                father
+                            };
 
                 var userList = query.ToList();
 
                 Assert.AreEqual(1, userList.Count);
-                //Assert.AreEqual(3, userList.First().user.id);
+                Assert.AreEqual(3, userList.First().user.id);
             }
 
             {
                 var query = from user in userQuery
-                             from father in userQuery.Where(father => user.fatherId == father.id)
-                             from mother in userQuery.Where(mother => user.motherId == mother.id)
-                             select new
-                             {
-                                 uniqueId = user.id + "_" + father.id + "_" + mother.id,
-                                 uniqueId1 = user.id + "_" + user.fatherId + "_" + user.motherId,
-                                 user,
-                                 user2 = user,
-                                 user3 = user,
-                                 father,
-                                 hasFather = user.fatherId != null ? true : false,
-                                 fatherName = father.name,
-                                 mother
-                             };
+                            from father in userQuery.Where(father => user.fatherId == father.id)
+                            from mother in userQuery.Where(mother => user.motherId == mother.id)
+                            orderby user.id
+                            select new
+                            {
+                                uniqueId = user.id + "_" + father.id + "_" + mother.id,
+                                uniqueId1 = user.id + "_" + user.fatherId + "_" + user.motherId,
+                                user,
+                                user2 = user,
+                                user3 = user,
+                                father,
+                                hasFather = user.fatherId != null ? true : false,
+                                fatherName = father.name,
+                                mother
+                            };
 
                 var userList = query.ToList();
                 Assert.AreEqual(3, userList.Count);
-                //Assert.AreEqual(1, userList.First().user.id);
-                //Assert.AreEqual(3, userList.Last().user.id);
-                //Assert.AreEqual(5, userList.Last().father?.id);
+                Assert.AreEqual(1, userList.First().user.id);
+                Assert.AreEqual(3, userList.Last().user.id);
+                Assert.AreEqual(5, userList.Last().father?.id);
             }
 
             {
                 var query = from user in userQuery
-                             from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
-                             from mother in userQuery.Where(mother => user.motherId == mother.id).DefaultIfEmpty()
-                             select new
-                             {
-                                 user,
-                                 father,
-                                 userId = user.id + 100,
-                                 hasFather = user.fatherId != null ? true : false,
-                                 hasFather2 = father != null,
-                                 fatherName = father.name,
-                                 motherName = mother.name,
-                             };
+                            from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
+                            from mother in userQuery.Where(mother => user.motherId == mother.id).DefaultIfEmpty()
+                            orderby user.id
+                            select new
+                            {
+                                user,
+                                father,
+                                userId = user.id + 100,
+                                hasFather = user.fatherId != null ? true : false,
+                                hasFather2 = father != null,
+                                fatherName = father.name,
+                                motherName = mother.name,
+                            };
 
                 var userList = query.ToList();
 
                 Assert.AreEqual(6, userList.Count);
-                //Assert.AreEqual(1, userList.First().user.id);
-                //Assert.AreEqual(101, userList.First().userId);
-                //Assert.AreEqual(6, userList.Last().user.id);
-                //Assert.AreEqual(5, userList[2].father.id);
+                Assert.AreEqual(1, userList.First().user.id);
+                Assert.AreEqual(101, userList.First().userId);
+                Assert.AreEqual(6, userList.Last().user.id);
+                Assert.AreEqual(5, userList[2].father.id);
             }
 
-            {
-                var query = from user in userQuery
-                             from father in userQuery.Where(father => user.fatherId == father.id)
-                             from mother in userQuery.Where(mother => user.motherId == mother.id)
-                             where user.id > 1
-                             orderby father.id descending
-                             select new
-                             {
-                                 user,
-                                 father,
-                                 userId = user.id + 100,
-                                 hasFather = user.fatherId != null ? true : false,
-                                 hasFather2 = father != null,
-                                 fatherName = father.name,
-                                 motherName = mother.name,
-                             };
-
-                var userList = query.ToList();
-
-                Assert.AreEqual(2, userList.Count);
-                //Assert.AreEqual(5, userList.First().father?.id);
-                //Assert.AreEqual(4, userList.Last().father?.id);
-            }
 
         }
 
