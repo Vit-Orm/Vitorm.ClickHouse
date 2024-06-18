@@ -26,10 +26,7 @@
 
     <ItemGroup>
         <PackageReference Include="ClickHouse.Client" Version="7.5.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\..\Vitorm\src\Vitorm\Vitorm.csproj" />
+        <PackageReference Include="Vitorm" Version="1.0.1" />
     </ItemGroup>
 
 </Project>
