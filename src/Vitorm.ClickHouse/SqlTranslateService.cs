@@ -20,13 +20,13 @@ namespace Vitorm.ClickHouse
         public static readonly SqlTranslateService Instance = new SqlTranslateService();
 
         protected QueryTranslateService queryTranslateService;
-  
+
         protected ExecuteDeleteTranslateService executeDeleteTranslateService;
 
         public SqlTranslateService()
         {
             queryTranslateService = new QueryTranslateService(this);
- 
+
             executeDeleteTranslateService = new ExecuteDeleteTranslateService(this);
         }
         /// <summary>
@@ -153,6 +153,12 @@ namespace Vitorm.ClickHouse
                     {
                         ExpressionNode_Binary binary = data;
                         return $"COALESCE({EvalExpression(arg, binary.left)},{EvalExpression(arg, binary.right)})";
+                    }
+                case nameof(ExpressionType.Conditional):
+                    {
+                        // IF(`t0`.`fatherId` is not null,true, false)
+                        ExpressionNode_Conditional conditional = data;
+                        return $"IF({EvalExpression(arg, conditional.Conditional_GetTest())},{EvalExpression(arg, conditional.Conditional_GetIfTrue())},{EvalExpression(arg, conditional.Conditional_GetIfFalse())})";
                     }
                     #endregion
 
