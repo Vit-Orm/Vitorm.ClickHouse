@@ -20,7 +20,7 @@ namespace Vit.Extensions
             Func<IDbConnection> createDbConnection = () => new ClickHouse.Client.ADO.ClickHouseConnection(ConnectionString);
 
 
-            dbContext.Init(sqlTranslateService: sqlTranslateService, createDbConnection: createDbConnection, sqlExecutor: SqlExecutorWithoutNull.Instance);
+            dbContext.Init(sqlTranslateService: sqlTranslateService, createDbConnection: createDbConnection, sqlExecutor: SqlExecutorWithoutNull.Instance, dbHashCode: ConnectionString.GetHashCode().ToString());
 
             //dbContext.createTransactionScope = (dbContext) => new Vitorm.Sql.Transaction.SqlTransactionScope(dbContext);
 
