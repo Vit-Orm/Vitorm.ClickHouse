@@ -1,8 +1,9 @@
-﻿using Vitorm.Sql;
-using Vit.Extensions;
-using Vit.Core.Util.ConfigurationManager;
+﻿using ClickHouse.Client.ADO;
 
-using ClickHouse.Client.ADO;
+using Vit.Core.Util.ConfigurationManager;
+using Vit.Extensions.Vitorm_Extensions;
+
+using Vitorm.Sql;
 
 namespace Vitorm.MsTest
 {
