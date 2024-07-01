@@ -72,13 +72,16 @@ namespace Vitorm.MsTest.CommonTest
                     from user in userQuery
                     from father in userQuery.Where(father => user.fatherId == father.id).DefaultIfEmpty()
                     from mother in userQuery.Where(mother => user.motherId == mother.id).DefaultIfEmpty()
-                    where user.id > 2
+                    from userClass in dbContext.Query<UserClass>().Where(userClass => user.classId == userClass.id).DefaultIfEmpty()
+                    where user.id > 1 && userClass.id == 1
                     orderby user.id
                     select new
                     {
                         user,
                         father,
                         mother,
+                        userClass,
+                        userClass.name,
                         testId = user.id + 100,
                         hasFather = father.name != null ? true : false
                     };
