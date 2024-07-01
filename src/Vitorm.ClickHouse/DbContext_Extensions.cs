@@ -12,17 +12,19 @@ namespace Vit.Extensions
 {
     public static class DbContext_Extensions
     {
-        public static SqlDbContext UseClickHouse(this SqlDbContext dbContext, string ConnectionString)
+        public static SqlDbContext UseClickHouse(this SqlDbContext dbContext, string connectionString, int? commandTimeout = null)
         {
             ISqlTranslateService sqlTranslateService = Vitorm.ClickHouse.SqlTranslateService.Instance;
 
             //Func<IDbConnection> createDbConnection = () => new ClickHouse.Ado.ClickHouseConnection(ConnectionString);
-            Func<IDbConnection> createDbConnection = () => new ClickHouse.Client.ADO.ClickHouseConnection(ConnectionString);
+            Func<IDbConnection> createDbConnection = () => new ClickHouse.Client.ADO.ClickHouseConnection(connectionString);
 
 
-            dbContext.Init(sqlTranslateService: sqlTranslateService, createDbConnection: createDbConnection, sqlExecutor: SqlExecutorWithoutNull.Instance, dbHashCode: ConnectionString.GetHashCode().ToString());
+            dbContext.Init(sqlTranslateService: sqlTranslateService, createDbConnection: createDbConnection, sqlExecutor: SqlExecutorWithoutNull.Instance, dbHashCode: connectionString.GetHashCode().ToString());
 
             //dbContext.createTransactionScope = (dbContext) => new Vitorm.Sql.Transaction.SqlTransactionScope(dbContext);
+
+            if (commandTimeout.HasValue) dbContext.commandTimeout = commandTimeout.Value;
 
             return dbContext;
         }
