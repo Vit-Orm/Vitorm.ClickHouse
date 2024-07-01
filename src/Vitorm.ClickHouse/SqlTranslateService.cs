@@ -115,14 +115,14 @@ namespace Vitorm.ClickHouse
                         // Nullable
                         if (targetType.IsGenericType) targetType = targetType.GetGenericArguments()[0];
 
-                        string targetDbType = GetDbType(targetType);
+                        string targetDbType = GetColumnDbType(targetType);
 
                         var sourceType = convert.body.Member_GetType();
                         if (sourceType != null)
                         {
                             if (sourceType.IsGenericType) sourceType = sourceType.GetGenericArguments()[0];
 
-                            if (targetDbType == GetDbType(sourceType)) return EvalExpression(arg, convert.body);
+                            if (targetDbType == GetColumnDbType(sourceType)) return EvalExpression(arg, convert.body);
                         }
 
                         if (targetType == typeof(string))
@@ -193,17 +193,17 @@ CREATE TABLE IF NOT EXISTS {DelimitTableName(entityDescriptor)} (
 {string.Join(",\r\n  ", sqlFields)}
 )
 ENGINE = MergeTree
-ORDER BY  {DelimitIdentifier(entityDescriptor.key.name)};";
+ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
             string GetColumnSql(IColumnDescriptor column)
             {
-                var dbType = column.databaseType ?? GetDbType(column.type);
-                return $"  {DelimitIdentifier(column.name)} {(column.nullable ? $"Nullable({dbType})" : dbType)}";
+                var columnDbType = column.databaseType ?? GetColumnDbType(column.type);
+                return $"  {DelimitIdentifier(column.columnName)} {(column.isNullable ? $"Nullable({columnDbType})" : columnDbType)}";
             }
         }
 
         // https://clickhouse.com/docs/en/sql-reference/data-types
-        protected readonly static Dictionary<Type, string> dbTypeMap = new()
+        protected readonly static Dictionary<Type, string> columnDbTypeMap = new()
         {
             [typeof(DateTime)] = "DateTime",
             [typeof(string)] = "String",
@@ -223,11 +223,11 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.name)};";
 
             [typeof(bool)] = "UInt8",
         };
-        protected override string GetDbType(Type type)
+        protected override string GetColumnDbType(Type type)
         {
             type = TypeUtil.GetUnderlyingType(type);
 
-            if (dbTypeMap.TryGetValue(type, out var dbType)) return dbType;
+            if (columnDbTypeMap.TryGetValue(type, out var dbType)) return dbType;
 
             //if (type.Name.ToLower().Contains("int")) return "INTEGER";
 

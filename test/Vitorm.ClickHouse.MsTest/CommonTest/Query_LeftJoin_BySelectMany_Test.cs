@@ -17,7 +17,7 @@ namespace Vitorm.MsTest.CommonTest
             using var dbContext = DataSource.CreateDbContext();
             var userQuery = dbContext.Query<User>();
 
-            // Linq Expresssion
+            // Linq Expression
             {
                 var query =
                         from user in userQuery
@@ -66,7 +66,7 @@ namespace Vitorm.MsTest.CommonTest
             using var dbContext = DataSource.CreateDbContext();
             var userQuery = dbContext.Query<User>();
 
-            // Linq Expresssion
+            // Linq Expression
             {
                 var query =
                     from user in userQuery
