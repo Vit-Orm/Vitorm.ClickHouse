@@ -1,33 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 using Vit.Linq;
 
+using Vitorm.ClickHouse;
 using Vitorm.Sql;
-using Vitorm.Sql.SqlTranslate;
 
 namespace Vitorm
 {
     public static class DbContext_Extensions_UseClickHouse
     {
         public static SqlDbContext UseClickHouse(this SqlDbContext dbContext, string connectionString, int? commandTimeout = null)
+                => UseClickHouse(dbContext, new DbConfig(connectionString: connectionString, commandTimeout: commandTimeout));
+
+        public static SqlDbContext UseClickHouse(this SqlDbContext dbContext, DbConfig config)
         {
-            ISqlTranslateService sqlTranslateService = Vitorm.ClickHouse.SqlTranslateService.Instance;
+            dbContext.Init(
+                sqlTranslateService: Vitorm.ClickHouse.SqlTranslateService.Instance,
+                createDbConnection: config.createDbConnection,
+                createReadOnlyDbConnection: config.createReadOnlyDbConnection,
+                sqlExecutor: SqlExecutorWithoutNull.Instance,
+                dbHashCode: config.dbHashCode
+                );
 
-            //Func<IDbConnection> createDbConnection = () => new global::ClickHouse.Ado.ClickHouseConnection(ConnectionString);
-            Func<IDbConnection> createDbConnection = () => new global::ClickHouse.Client.ADO.ClickHouseConnection(connectionString);
-
-
-            dbContext.Init(sqlTranslateService: sqlTranslateService, createDbConnection: createDbConnection, sqlExecutor: SqlExecutorWithoutNull.Instance, dbHashCode: connectionString.GetHashCode().ToString());
-
-            //dbContext.createTransactionScope = (dbContext) => new Vitorm.Sql.Transaction.SqlTransactionScope(dbContext);
-
-            if (commandTimeout.HasValue) dbContext.commandTimeout = commandTimeout.Value;
+            if (config.commandTimeout.HasValue) dbContext.commandTimeout = config.commandTimeout.Value;
 
             return dbContext;
         }
+
 
 
 
