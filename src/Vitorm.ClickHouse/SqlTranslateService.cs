@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 
 using Vit.Extensions.Linq_Extensions;
 using Vit.Linq.ExpressionTree.ComponentModel;
+
+using Vitorm.ClickHouse.TranslateService;
 using Vitorm.Entity;
 using Vitorm.Sql;
 using Vitorm.Sql.SqlTranslate;
-using Vitorm.ClickHouse.TranslateService;
 using Vitorm.StreamQuery;
-using System.Text;
 
 namespace Vitorm.ClickHouse
 {

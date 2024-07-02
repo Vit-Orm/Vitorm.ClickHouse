@@ -8,16 +8,16 @@ using Vit.Extensions.Linq_Extensions;
 using Vitorm.Sql;
 using Vitorm.Sql.SqlTranslate;
 
-namespace Vit.Extensions.Vitorm_Extensions
+namespace Vitorm
 {
-    public static class DbContext_Extensions
+    public static class DbContext_Extensions_UseClickHouse
     {
         public static SqlDbContext UseClickHouse(this SqlDbContext dbContext, string connectionString, int? commandTimeout = null)
         {
             ISqlTranslateService sqlTranslateService = Vitorm.ClickHouse.SqlTranslateService.Instance;
 
-            //Func<IDbConnection> createDbConnection = () => new ClickHouse.Ado.ClickHouseConnection(ConnectionString);
-            Func<IDbConnection> createDbConnection = () => new ClickHouse.Client.ADO.ClickHouseConnection(connectionString);
+            //Func<IDbConnection> createDbConnection = () => new global::ClickHouse.Ado.ClickHouseConnection(ConnectionString);
+            Func<IDbConnection> createDbConnection = () => new global::ClickHouse.Client.ADO.ClickHouseConnection(connectionString);
 
 
             dbContext.Init(sqlTranslateService: sqlTranslateService, createDbConnection: createDbConnection, sqlExecutor: SqlExecutorWithoutNull.Instance, dbHashCode: connectionString.GetHashCode().ToString());
@@ -33,7 +33,7 @@ namespace Vit.Extensions.Vitorm_Extensions
 
         class SqlExecutorWithoutNull : SqlExecutor
         {
-            public readonly static SqlExecutorWithoutNull Instance = new();
+            public readonly static new SqlExecutorWithoutNull Instance = new();
 
             public override int Execute(IDbConnection conn, string sql, IDictionary<string, object> param = null, IDbTransaction transaction = null, int? commandTimeout = null)
             {
