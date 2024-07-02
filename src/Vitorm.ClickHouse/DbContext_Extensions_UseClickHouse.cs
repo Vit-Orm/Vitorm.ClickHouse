@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-using Vit.Extensions.Linq_Extensions;
+using Vit.Linq;
 
 using Vitorm.Sql;
 using Vitorm.Sql.SqlTranslate;

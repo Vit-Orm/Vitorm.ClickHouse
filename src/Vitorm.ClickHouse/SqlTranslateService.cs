@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-using Vit.Extensions.Linq_Extensions;
+using Vit.Linq;
 using Vit.Linq.ExpressionTree.ComponentModel;
 
 using Vitorm.ClickHouse.TranslateService;
