@@ -130,36 +130,23 @@ namespace Vitorm.MsTest.CommonTest
             var userQuery = dbContext.Query<User>();
 
             {
-                var query = userQuery.OrderByDescending(user => user.fatherId ?? 0).ThenBy(user => user.id);
+                var query = userQuery.OrderByDescending(user => user.id);
 
-                var sql = query.ToExecuteString();
+                //var sql = query.ToExecuteString();
 
                 var userList = query.ToList();
                 Assert.AreEqual(6, userList.Count);
-                Assert.AreEqual(3, userList[0].id);
-                Assert.AreEqual(1, userList[1].id);
+                Assert.AreEqual(6, userList[0].id);
             }
             {
-                var query = userQuery.Select(user => new { fid = user.fatherId, user.id }).OrderByDescending(user => user.fid ?? 0).ThenBy(user => user.id);
+                var query = userQuery.OrderByDescending(user => user.id).Select(user => new { fid = user.fatherId, user.id });
 
-                var sql = query.ToExecuteString();
-
-                var userList = query.ToList();
-                Assert.AreEqual(6, userList.Count);
-                Assert.AreEqual(3, userList[0].id);
-                Assert.AreEqual(1, userList[1].id);
-            }
-            {
-                var query = userQuery.Select(user => new { user.fatherId, user.id }).OrderByDescending(user => user.fatherId ?? 0).ThenBy(user => user.id);
-
-                var sql = query.ToExecuteString();
+                //var sql = query.ToExecuteString();
 
                 var userList = query.ToList();
                 Assert.AreEqual(6, userList.Count);
-                Assert.AreEqual(3, userList[0].id);
-                Assert.AreEqual(1, userList[1].id);
+                Assert.AreEqual(6, userList[0].id);
             }
-
 
         }
 

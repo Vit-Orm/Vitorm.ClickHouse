@@ -80,19 +80,50 @@ namespace Vitorm.MsTest.CommonTest
                 Test(users.SelectMany(user => users.Where(father => father.id == user.fatherId), (user, father) => new { user, user.id }), config);
 
                 Test(users.SelectMany(user => users.Where(father => father.id == user.fatherId), (user, father) => new { user, father }), config);
+
+
+
+                // groupedTable Lambda Expression
+                {
+                    var query =
+                         users
+                        .GroupBy(user => new { user.fatherId, user.motherId })
+                        .Select(userGroup => new
+                        {
+                            userGroup.Key.fatherId,
+                            userGroup.Key.motherId,
+                            sumId = userGroup.Sum(m => m.id),
+                        });
+
+                    Test(query, config);
+                }
+                // groupedTable Linq Expression
+                {
+                    var query =
+                         from user in users
+                         group user by new { user.fatherId, user.motherId } into userGroup
+                         select new
+                         {
+                             userGroup.Key.fatherId,
+                             userGroup.Key.motherId,
+                             sumId = userGroup.Sum(m => m.id),
+                         };
+
+                    Test(query, config);
+                }
             }
             #endregion
 
             #region with orderBy
             {
                 // single table
-                Test(users.Select(user => user.fatherId).OrderBy(m => m), config);
-                Test(users.Select(user => new { user.fatherId }).OrderBy(m => m.fatherId), config);
+                Test(users.OrderBy(m => m.fatherId).Select(user => user.fatherId), config);
+                Test(users.OrderBy(m => m.fatherId).Select(user => new { user.fatherId }), config);
 
-                Test(users.Select(user => user).OrderBy(m => m.fatherId), config);
-                Test(users.Select(user => new { user }).OrderBy(m => m.user.fatherId), config);
-                Test(users.Select(user => new { user, user.fatherId }).OrderBy(m => m.fatherId), config);
-                Test(users.Select(user => new { user.id, user.fatherId }).OrderBy(m => m.fatherId), config);
+                Test(users.OrderBy(m => m.fatherId).Select(user => user), config);
+                Test(users.OrderBy(m => m.fatherId).Select(user => new { user }), config);
+                Test(users.OrderBy(m => m.fatherId).Select(user => new { user, user.fatherId }), config);
+                Test(users.OrderBy(m => m.fatherId).Select(user => new { user.id, user.fatherId }), config);
 
 
 
@@ -105,6 +136,21 @@ namespace Vitorm.MsTest.CommonTest
                 Test(users.SelectMany(user => users.Where(father => father.id == user.fatherId), (user, father) => new { user, user.id }).OrderBy(m => m.user.fatherId), config);
 
                 Test(users.SelectMany(user => users.Where(father => father.id == user.fatherId), (user, father) => new { user, father }).OrderBy(m => m.user.fatherId), config);
+
+
+                // order by alias column
+                {
+                    Test(users.Select(user => user.fatherId).OrderBy(m => m), config);
+                    Test(users.Select(user => new { user.fatherId }).OrderBy(m => m.fatherId), config);
+
+                    Test(users.Select(user => user).OrderBy(m => m.fatherId), config);
+                    Test(users.Select(user => new { user }).OrderBy(m => m.user.fatherId), config);
+                    Test(users.Select(user => new { user, user.fatherId }).OrderBy(m => m.fatherId), config);
+                    Test(users.Select(user => new { user.id, user.fatherId }).OrderBy(m => m.fatherId), config);
+
+                    Test(users.Select(user => new { user.id, fid = user.fatherId ?? -1 }).OrderBy(m => m.id), config);
+                }
+
 
 
                 // groupedTable Lambda Expression
@@ -157,7 +203,7 @@ namespace Vitorm.MsTest.CommonTest
             var rows = query.ToList();
             int expectedCount = rows.Count;
 
-       
+
             var count = query.Count();
             Assert.AreEqual(expectedCount, count);
         }

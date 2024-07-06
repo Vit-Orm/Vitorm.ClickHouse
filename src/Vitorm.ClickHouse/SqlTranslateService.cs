@@ -6,9 +6,7 @@ using System.Text;
 using Vit.Linq;
 using Vit.Linq.ExpressionTree.ComponentModel;
 
-using Vitorm.ClickHouse.TranslateService;
 using Vitorm.Entity;
-using Vitorm.Sql;
 using Vitorm.Sql.SqlTranslate;
 using Vitorm.StreamQuery;
 
@@ -18,15 +16,15 @@ namespace Vitorm.ClickHouse
     {
         public static readonly SqlTranslateService Instance = new SqlTranslateService();
 
-        protected QueryTranslateService queryTranslateService;
-
-        protected ExecuteDeleteTranslateService executeDeleteTranslateService;
+        protected override BaseQueryTranslateService queryTranslateService { get; }
+        protected override BaseQueryTranslateService executeUpdateTranslateService => throw new NotImplementedException();
+        protected override BaseQueryTranslateService executeDeleteTranslateService { get; }
 
         public SqlTranslateService()
         {
             queryTranslateService = new QueryTranslateService(this);
 
-            executeDeleteTranslateService = new ExecuteDeleteTranslateService(this);
+            executeDeleteTranslateService = new Vitorm.ClickHouse.TranslateService.ExecuteDeleteTranslateService(this);
         }
         /// <summary>
         ///     Generates the delimited SQL representation of an identifier (column name, table name, etc.).
@@ -243,12 +241,6 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
             return $@"DROP TABLE if exists {DelimitTableName(entityDescriptor)};";
         }
 
-        public override (string sql, Dictionary<string, object> sqlParam, IDbDataReader dataReader) PrepareQuery(QueryTranslateArgument arg, CombinedStream combinedStream)
-        {
-            string sql = queryTranslateService.BuildQuery(arg, combinedStream);
-            return (sql, arg.sqlParam, arg.dataReader);
-        }
-
         public override (string sql, Dictionary<string, object> sqlParam) PrepareExecuteUpdate(QueryTranslateArgument arg, CombinedStream combinedStream) => throw new NotImplementedException();
 
 
@@ -288,12 +280,6 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
                 sql.Append(");");
             }
             return (sql.ToString(), sqlParam);
-        }
-
-        public override (string sql, Dictionary<string, object> sqlParam) PrepareExecuteDelete(QueryTranslateArgument arg, CombinedStream combinedStream)
-        {
-            string sql = executeDeleteTranslateService.BuildQuery(arg, combinedStream);
-            return (sql, arg.sqlParam);
         }
 
 
