@@ -122,21 +122,72 @@ namespace Vitorm.MsTest.CommonTest
 
         }
 
+
+        [TestMethod]
+        public void Test_OrderBy()
+        {
+            using var dbContext = DataSource.CreateDbContext();
+            var userQuery = dbContext.Query<User>();
+
+            {
+                var query = userQuery.OrderByDescending(user => user.fatherId ?? 0).ThenBy(user => user.id);
+
+                var sql = query.ToExecuteString();
+
+                var userList = query.ToList();
+                Assert.AreEqual(6, userList.Count);
+                Assert.AreEqual(3, userList[0].id);
+                Assert.AreEqual(1, userList[1].id);
+            }
+            {
+                var query = userQuery.Select(user => new { fid = user.fatherId, user.id }).OrderByDescending(user => user.fid ?? 0).ThenBy(user => user.id);
+
+                var sql = query.ToExecuteString();
+
+                var userList = query.ToList();
+                Assert.AreEqual(6, userList.Count);
+                Assert.AreEqual(3, userList[0].id);
+                Assert.AreEqual(1, userList[1].id);
+            }
+            {
+                var query = userQuery.Select(user => new { user.fatherId, user.id }).OrderByDescending(user => user.fatherId ?? 0).ThenBy(user => user.id);
+
+                var sql = query.ToExecuteString();
+
+                var userList = query.ToList();
+                Assert.AreEqual(6, userList.Count);
+                Assert.AreEqual(3, userList[0].id);
+                Assert.AreEqual(1, userList[1].id);
+            }
+
+
+        }
+
+
+
+
+
         [TestMethod]
         public void Test_Count()
         {
             using var dbContext = DataSource.CreateDbContext();
             var userQuery = dbContext.Query<User>();
 
+            // Count
             {
-                var count = (from user in userQuery
-                             where user.id > 2
-                             select new
-                             {
-                                 user
-                             }).Count();
+                var query = userQuery.Where(user => user.id > 2);
 
+                var count = query.Count();
                 Assert.AreEqual(4, count);
+            }
+            // Skip Take Count
+            {
+                var query = userQuery.Where(user => user.id > 2);
+
+                query = query.Skip(1).Take(10);
+
+                var count = query.Count();
+                Assert.AreEqual(3, count);
             }
         }
 
