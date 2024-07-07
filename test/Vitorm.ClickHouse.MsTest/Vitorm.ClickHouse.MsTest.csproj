@@ -10,33 +10,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="CustomTest\**" />
-      <EmbeddedResource Remove="CustomTest\**" />
-      <None Remove="CustomTest\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="CustomTest\CRUD_Test.cs" />
-      <Compile Include="CustomTest\DbFunction_Test.cs" />
-      <Compile Include="CustomTest\Orm_Extensions_ExecuteDelete_Test.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
         <PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
         <PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
 
-        <PackageReference Include="Vit.Core" Version="2.1.21" />
+        <PackageReference Include="Vit.Core" Version="2.2.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Vitorm.ClickHouse\Vitorm.ClickHouse.csproj" />
+        <ProjectReference Include="..\..\src\Vitorm.ClickHouse\Vitorm.ClickHouse.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

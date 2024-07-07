@@ -19,7 +19,7 @@ namespace Vitorm.MsTest.CustomTest
         {
             using var dbContext = CreateDbContext();
 
-            var newUserList = User.NewUsers(7, 4);
+            var newUserList = User.NewUsers(7, 4, forAdd: true);
 
 
             // #1 Add
@@ -28,7 +28,7 @@ namespace Vitorm.MsTest.CustomTest
             // #2 AddRange
             dbContext.AddRange(newUserList.Skip(1));
 
-            Thread.Sleep(1000);
+            DataSource.WaitForUpdate();
 
             // assert
             {
@@ -40,7 +40,7 @@ namespace Vitorm.MsTest.CustomTest
 
             try
             {
-                dbContext.Add(newUserList[0]);              
+                dbContext.Add(newUserList[0]);
             }
             catch (Exception ex)
             {
@@ -52,7 +52,7 @@ namespace Vitorm.MsTest.CustomTest
         #endregion
 
 
-      
+
 
         #region #4 Delete
 
@@ -70,16 +70,16 @@ namespace Vitorm.MsTest.CustomTest
             // #2 DeleteRange
             {
                 dbContext.DeleteRange(User.NewUsers(2, 2));
-            
+
             }
 
             // #3 DeleteByKey
             {
                 var user = User.NewUser(4);
                 var key = dbContext.GetEntityDescriptor(typeof(User)).key;
-                var keyValue=key.GetValue(user);
+                var keyValue = key.GetValue(user);
                 dbContext.DeleteByKey<User>(keyValue);
-            
+
             }
 
             // #4 DeleteByKeys
@@ -87,10 +87,10 @@ namespace Vitorm.MsTest.CustomTest
                 var users = User.NewUsers(5, 2);
                 var key = dbContext.GetEntityDescriptor(typeof(User)).key;
                 var keyValues = users.Select(user => key.GetValue(user));
-                dbContext.DeleteByKeys<User, object>(keyValues);          
+                dbContext.DeleteByKeys<User, object>(keyValues);
             }
 
-            Thread.Sleep(1000);
+            DataSource.WaitForUpdate();
 
             // assert
             {
