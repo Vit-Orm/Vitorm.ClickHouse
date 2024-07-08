@@ -73,7 +73,7 @@ namespace Vitorm.ClickHouse
                             // ##1 ToString
                             case nameof(object.ToString):
                                 {
-                                    return $"cast({EvalExpression(arg, methodCall.@object)} as char)";
+                                    return $"cast({EvalExpression(arg, methodCall.@object)} as Nullable(String) )";
                                 }
 
                             #region ##2 String method:  StartsWith EndsWith Contains
@@ -126,7 +126,7 @@ namespace Vitorm.ClickHouse
 
                         if (targetType == typeof(string))
                         {
-                            return $"cast({EvalExpression(arg, convert.body)} as String)";
+                            return $"cast({EvalExpression(arg, convert.body)} as Nullable(String))";
                         }
 
                         return $"cast({EvalExpression(arg, convert.body)} as {targetDbType})";
@@ -138,9 +138,21 @@ namespace Vitorm.ClickHouse
                         // ##1 String Add
                         if (data.valueType?.ToType() == typeof(string))
                         {
-                            // cast(ifNull('null','') as String)
-                            //return $"CONCAT({EvalExpression(arg, binary.left)} ,{EvalExpression(arg, binary.right)})";
-                            return $"CONCAT(cast(ifNull({EvalExpression(arg, binary.left)},'') as String) ,cast(ifNull({EvalExpression(arg, binary.right)},'') as String) )";
+                            // select ifNull( cast( (userFatherId) as Nullable(String) ) , '' )  from `User` 
+
+                            return $"CONCAT( {BuildSqlSentence(binary.left)} , {BuildSqlSentence(binary.right)} )";
+
+                            string BuildSqlSentence(ExpressionNode node)
+                            {
+                                if (node.nodeType == NodeType.Constant)
+                                {
+                                    ExpressionNode_Constant constant = node;
+                                    if (constant.value == null) return "''";
+                                    else return $"cast( ({EvalExpression(arg, node)}) as String )";
+                                }
+                                else
+                                    return $"ifNull( cast( ({EvalExpression(arg, node)}) as Nullable(String) ) , '')";
+                            }
                         }
 
                         // ##2 Numberic Add
@@ -196,7 +208,7 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
             string GetColumnSql(IColumnDescriptor column)
             {
-                var columnDbType = column.databaseType ?? GetColumnDbType(column.type);
+                var columnDbType = column.databaseType ?? GetColumnDbType(TypeUtil.GetUnderlyingType(column.type));
                 return $"  {DelimitIdentifier(column.columnName)} {(column.isNullable ? $"Nullable({columnDbType})" : columnDbType)}";
             }
         }
@@ -224,13 +236,15 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
         };
         protected override string GetColumnDbType(Type type)
         {
-            type = TypeUtil.GetUnderlyingType(type);
+            var underlyingType = TypeUtil.GetUnderlyingType(type);
 
-            if (columnDbTypeMap.TryGetValue(type, out var dbType)) return dbType;
+            if (!columnDbTypeMap.TryGetValue(underlyingType, out var dbType))
+                throw new NotSupportedException("unsupported column type:" + type.Name);
+
+            if (type != underlyingType) dbType = $"Nullable({dbType})";
+            return dbType;
 
             //if (type.Name.ToLower().Contains("int")) return "INTEGER";
-
-            throw new NotSupportedException("unsupported column type:" + type.Name);
         }
 
         #endregion
