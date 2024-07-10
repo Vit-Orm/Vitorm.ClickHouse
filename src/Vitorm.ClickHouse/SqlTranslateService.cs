@@ -297,6 +297,8 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
         }
 
 
+        public override (string sql, Func<object, Dictionary<string, object>> GetSqlParams) PrepareUpdate(SqlTranslateArgument arg) => throw new NotImplementedException();
+
 
     }
 }

@@ -52,33 +52,14 @@ namespace Vitorm.MsTest
 
         readonly static string connectionString = Appsettings.json.GetStringByPath("Vitorm.ClickHouse.connectionString");
 
-        static int dbIndexCount = 0;
-        public static SqlDbContext CreateDbContextForWriting()
+
+        public static SqlDbContext CreateDbContextForWriting(bool autoInit = true)
         {
-            dbIndexCount++;
-            var dbName = "dev-orm" + dbIndexCount;
-            var connectionString = DataSource.connectionString;
-
-            // #1 create db
-            {
-                var dbContext = new SqlDbContext();
-                dbContext.UseClickHouse(connectionString);
-                dbContext.Execute(sql: $"create database if not exists `{dbName}`; ");
-            }
-
-            // #2
-            {
-                ClickHouseConnectionStringBuilder builder = new ClickHouseConnectionStringBuilder(connectionString);
-                builder.Database = dbName;
-                connectionString = builder.ToString();
-
-                var dbContext = new SqlDbContext();
-                dbContext.UseClickHouse(connectionString);
-
-                InitDbContext(dbContext);
-
-                return dbContext;
-            }
+            var dbContext = new SqlDbContext();
+            dbContext.UseClickHouse(connectionString);
+            dbContext.ChangeDatabase(dbContext.databaseName + "2");
+            if (autoInit) InitDbContext(dbContext);
+            return dbContext;
         }
 
         static bool initedDefaultIndex = false;
@@ -133,6 +114,8 @@ namespace Vitorm.MsTest
                 dbContext.AddRange(UserClass.NewClasses(1, 6));
             }
             #endregion
+
+            WaitForUpdate();
         }
 
     }

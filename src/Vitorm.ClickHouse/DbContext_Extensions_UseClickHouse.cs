@@ -18,10 +18,8 @@ namespace Vitorm
         {
             dbContext.Init(
                 sqlTranslateService: Vitorm.ClickHouse.SqlTranslateService.Instance,
-                createDbConnection: config.createDbConnection,
-                createReadOnlyDbConnection: config.createReadOnlyDbConnection,
-                sqlExecutor: SqlExecutorWithoutNull.Instance,
-                dbHashCode: config.dbHashCode
+                dbConnectionProvider: config.ToDbConnectionProvider(),
+                sqlExecutor: SqlExecutorWithoutNull.Instance
                 );
 
             if (config.commandTimeout.HasValue) dbContext.commandTimeout = config.commandTimeout.Value;
