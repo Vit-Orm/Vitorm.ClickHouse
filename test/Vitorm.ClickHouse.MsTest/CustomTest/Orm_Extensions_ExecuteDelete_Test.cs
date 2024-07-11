@@ -47,10 +47,10 @@ namespace Vitorm.MsTest.CustomTest
                 Thread.Sleep(1000);
 
                 var newUsers = userQuery.ToList();
-                Assert.AreEqual(3, newUsers.Count()); 
+                Assert.AreEqual(3, newUsers.Count());
             }
 
-          
+
         }
     }
 }

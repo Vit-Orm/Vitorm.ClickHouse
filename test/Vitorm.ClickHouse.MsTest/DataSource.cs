@@ -1,6 +1,4 @@
-﻿using ClickHouse.Client.ADO;
-
-using Vit.Core.Util.ConfigurationManager;
+﻿using Vit.Core.Util.ConfigurationManager;
 
 using Vitorm.Sql;
 
