@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -180,7 +181,7 @@ namespace Vitorm.ClickHouse
 
 
         #region PrepareCreate
-        public override string PrepareCreate(IEntityDescriptor entityDescriptor)
+        public override string PrepareTryCreateTable(IEntityDescriptor entityDescriptor)
         {
             /* //sql
 CREATE TABLE IF NOT EXISTS `User`
@@ -249,13 +250,13 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
         #endregion
 
-        public override string PrepareDrop(IEntityDescriptor entityDescriptor)
+        public override string PrepareTryDropTable(IEntityDescriptor entityDescriptor)
         {
             // DROP TABLE if exists `User`;
             return $@"DROP TABLE if exists {DelimitTableName(entityDescriptor)};";
         }
 
-        public override (string sql, Dictionary<string, object> sqlParam) PrepareExecuteUpdate(QueryTranslateArgument arg, CombinedStream combinedStream) => throw new NotImplementedException();
+        public override string PrepareExecuteUpdate(QueryTranslateArgument arg, CombinedStream combinedStream) => throw new NotImplementedException();
 
 
         public override string PrepareDelete(SqlTranslateArgument arg)
@@ -269,7 +270,7 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
             return sql;
         }
 
-        public override (string sql, Dictionary<string, object> sqlParam) PrepareDeleteByKeys<Key>(SqlTranslateArgument arg, IEnumerable<Key> keys)
+        public override string PrepareDeleteByKeys<Key>(SqlTranslateArgument arg, IEnumerable<Key> keys)
         {
             //  ALTER TABLE `User` DELETE WHERE  id in ( 7 ) ;
 
@@ -280,20 +281,20 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
             sql.Append("ALTER TABLE ").Append(DelimitTableName(entityDescriptor)).Append(" DELETE where ").Append(DelimitIdentifier(entityDescriptor.keyName)).Append(" in (");
 
-            int keyIndex = 0;
-            foreach (var key in keys)
+            if (keys.Any())
             {
-                var paramName = "p" + (keyIndex++);
-                sql.Append(GenerateParameterName(paramName)).Append(",");
-                sqlParam[paramName] = key;
-            }
-            if (keyIndex == 0) sql.Append("null);");
-            else
-            {
+                foreach (var key in keys)
+                {
+                    sql.Append(GenerateParameterName(arg.AddParamAndGetName(key))).Append(",");
+                }
                 sql.Length--;
                 sql.Append(");");
             }
-            return (sql.ToString(), sqlParam);
+            else
+            {
+                sql.Append("null);");
+            }
+            return sql.ToString();
         }
 
 
