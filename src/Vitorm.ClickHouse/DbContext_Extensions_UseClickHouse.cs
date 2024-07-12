@@ -18,10 +18,9 @@ namespace Vitorm
         {
             dbContext.Init(
                 sqlTranslateService: Vitorm.ClickHouse.SqlTranslateService.Instance,
-                createDbConnection: config.createDbConnection,
-                createReadOnlyDbConnection: config.createReadOnlyDbConnection,
+                dbConnectionProvider: config.ToDbConnectionProvider(),
                 sqlExecutor: SqlExecutorWithoutNull.Instance,
-                dbHashCode: config.dbHashCode
+                extraConfig: extraConfig
                 );
 
             if (config.commandTimeout.HasValue) dbContext.commandTimeout = config.commandTimeout.Value;
@@ -29,7 +28,7 @@ namespace Vitorm
             return dbContext;
         }
 
-
+        readonly static Dictionary<string, object> extraConfig = new() { ["query_ToListAndTotalCount_InvokeInOneExecute"] = false };
 
 
         class SqlExecutorWithoutNull : SqlExecutor
