@@ -24,7 +24,7 @@ namespace Vitorm.MsTest.CustomTest
                 Assert.AreEqual(3, userList.Last().id);
             }
 
-           
+
 
             // coalesce(parameter1,parameter2, …)
             {

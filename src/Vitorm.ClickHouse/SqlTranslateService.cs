@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -73,7 +74,7 @@ namespace Vitorm.ClickHouse
                             // ##1 ToString
                             case nameof(object.ToString):
                                 {
-                                    return $"cast({EvalExpression(arg, methodCall.@object)} as char)";
+                                    return $"cast({EvalExpression(arg, methodCall.@object)} as Nullable(String) )";
                                 }
 
                             #region ##2 String method:  StartsWith EndsWith Contains
@@ -126,7 +127,7 @@ namespace Vitorm.ClickHouse
 
                         if (targetType == typeof(string))
                         {
-                            return $"cast({EvalExpression(arg, convert.body)} as String)";
+                            return $"cast({EvalExpression(arg, convert.body)} as Nullable(String))";
                         }
 
                         return $"cast({EvalExpression(arg, convert.body)} as {targetDbType})";
@@ -138,9 +139,21 @@ namespace Vitorm.ClickHouse
                         // ##1 String Add
                         if (data.valueType?.ToType() == typeof(string))
                         {
-                            // cast(ifNull('null','') as String)
-                            //return $"CONCAT({EvalExpression(arg, binary.left)} ,{EvalExpression(arg, binary.right)})";
-                            return $"CONCAT(cast(ifNull({EvalExpression(arg, binary.left)},'') as String) ,cast(ifNull({EvalExpression(arg, binary.right)},'') as String) )";
+                            // select ifNull( cast( (userFatherId) as Nullable(String) ) , '' )  from `User` 
+
+                            return $"CONCAT( {BuildSqlSentence(binary.left)} , {BuildSqlSentence(binary.right)} )";
+
+                            string BuildSqlSentence(ExpressionNode node)
+                            {
+                                if (node.nodeType == NodeType.Constant)
+                                {
+                                    ExpressionNode_Constant constant = node;
+                                    if (constant.value == null) return "''";
+                                    else return $"cast( ({EvalExpression(arg, node)}) as String )";
+                                }
+                                else
+                                    return $"ifNull( cast( ({EvalExpression(arg, node)}) as Nullable(String) ) , '')";
+                            }
                         }
 
                         // ##2 Numberic Add
@@ -168,7 +181,7 @@ namespace Vitorm.ClickHouse
 
 
         #region PrepareCreate
-        public override string PrepareCreate(IEntityDescriptor entityDescriptor)
+        public override string PrepareTryCreateTable(IEntityDescriptor entityDescriptor)
         {
             /* //sql
 CREATE TABLE IF NOT EXISTS `User`
@@ -196,7 +209,7 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
             string GetColumnSql(IColumnDescriptor column)
             {
-                var columnDbType = column.databaseType ?? GetColumnDbType(column.type);
+                var columnDbType = column.databaseType ?? GetColumnDbType(TypeUtil.GetUnderlyingType(column.type));
                 return $"  {DelimitIdentifier(column.columnName)} {(column.isNullable ? $"Nullable({columnDbType})" : columnDbType)}";
             }
         }
@@ -224,24 +237,26 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
         };
         protected override string GetColumnDbType(Type type)
         {
-            type = TypeUtil.GetUnderlyingType(type);
+            var underlyingType = TypeUtil.GetUnderlyingType(type);
 
-            if (columnDbTypeMap.TryGetValue(type, out var dbType)) return dbType;
+            if (!columnDbTypeMap.TryGetValue(underlyingType, out var dbType))
+                throw new NotSupportedException("unsupported column type:" + type.Name);
+
+            if (type != underlyingType) dbType = $"Nullable({dbType})";
+            return dbType;
 
             //if (type.Name.ToLower().Contains("int")) return "INTEGER";
-
-            throw new NotSupportedException("unsupported column type:" + type.Name);
         }
 
         #endregion
 
-        public override string PrepareDrop(IEntityDescriptor entityDescriptor)
+        public override string PrepareTryDropTable(IEntityDescriptor entityDescriptor)
         {
             // DROP TABLE if exists `User`;
             return $@"DROP TABLE if exists {DelimitTableName(entityDescriptor)};";
         }
 
-        public override (string sql, Dictionary<string, object> sqlParam) PrepareExecuteUpdate(QueryTranslateArgument arg, CombinedStream combinedStream) => throw new NotImplementedException();
+        public override string PrepareExecuteUpdate(QueryTranslateArgument arg, CombinedStream combinedStream) => throw new NotImplementedException();
 
 
         public override string PrepareDelete(SqlTranslateArgument arg)
@@ -255,7 +270,7 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
             return sql;
         }
 
-        public override (string sql, Dictionary<string, object> sqlParam) PrepareDeleteByKeys<Key>(SqlTranslateArgument arg, IEnumerable<Key> keys)
+        public override string PrepareDeleteByKeys<Key>(SqlTranslateArgument arg, IEnumerable<Key> keys)
         {
             //  ALTER TABLE `User` DELETE WHERE  id in ( 7 ) ;
 
@@ -266,22 +281,24 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
             sql.Append("ALTER TABLE ").Append(DelimitTableName(entityDescriptor)).Append(" DELETE where ").Append(DelimitIdentifier(entityDescriptor.keyName)).Append(" in (");
 
-            int keyIndex = 0;
-            foreach (var key in keys)
+            if (keys.Any())
             {
-                var paramName = "p" + (keyIndex++);
-                sql.Append(GenerateParameterName(paramName)).Append(",");
-                sqlParam[paramName] = key;
-            }
-            if (keyIndex == 0) sql.Append("null);");
-            else
-            {
+                foreach (var key in keys)
+                {
+                    sql.Append(GenerateParameterName(arg.AddParamAndGetName(key))).Append(",");
+                }
                 sql.Length--;
                 sql.Append(");");
             }
-            return (sql.ToString(), sqlParam);
+            else
+            {
+                sql.Append("null);");
+            }
+            return sql.ToString();
         }
 
+
+        public override (string sql, Func<object, Dictionary<string, object>> GetSqlParams) PrepareUpdate(SqlTranslateArgument arg) => throw new NotImplementedException();
 
 
     }

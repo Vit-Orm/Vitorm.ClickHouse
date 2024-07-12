@@ -1,7 +1,9 @@
-﻿using System.Linq.Expressions;
-using Vit.Linq;
+﻿using System.Data;
+using System.Linq.Expressions;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Data;
+
+using Vit.Linq;
 
 namespace Vit.Linq.ExpressionTree.ExpressionTreeTest
 {
@@ -12,6 +14,8 @@ namespace Vit.Linq.ExpressionTree.ExpressionTreeTest
         public static List<User> Test(IQueryable<User> query, Expression<Func<User, bool>> predicate)
         {
             var expected = GetSourceData().AsQueryable().Where(predicate).ToList();
+            if (expected.Count == 0) throw new Exception("result of predicate must not be empty");
+
             {
                 var actual = query.Where(predicate).ToList();
                 Check(expected, actual);
