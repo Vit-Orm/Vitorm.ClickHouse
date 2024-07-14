@@ -349,4 +349,4 @@ namespace App
 ```
 
 
-[Test Example](https://github.com/VitormLib/Vitorm/tree/master/test/Vitorm.ClickHouse.MsTest)    
+[Test Example](https://github.com/VitormLib/Vitorm.ClickHouse/tree/master/test/Vitorm.ClickHouse.MsTest)    
