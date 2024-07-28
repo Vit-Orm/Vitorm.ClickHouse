@@ -18,6 +18,7 @@ namespace Vitorm.MsTest.ExpressionTreeTest
             dbSet.TryDropTable();
             dbSet.TryCreateTable();
             dbSet.AddRange(initUsers);
+            DataSource.WaitForUpdate();
 
             var query = dbSet.Query().OrderBy(m => m.id);
             ExpressionTester.TestQueryable(query);
