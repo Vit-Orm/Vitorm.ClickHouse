@@ -252,9 +252,10 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
         public override string PrepareTryDropTable(IEntityDescriptor entityDescriptor)
         {
-            // DROP TABLE if exists `User`;
-            return $@"DROP TABLE if exists {DelimitTableName(entityDescriptor)};";
+            // drop table if exists `User`;
+            return $@"drop table if exists {DelimitTableName(entityDescriptor)};";
         }
+        public override string PrepareTruncate(IEntityDescriptor entityDescriptor) => throw new NotSupportedException();
 
         public override string PrepareExecuteUpdate(QueryTranslateArgument arg, CombinedStream combinedStream) => throw new NotImplementedException();
 
