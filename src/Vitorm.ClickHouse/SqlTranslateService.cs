@@ -234,6 +234,8 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
             [typeof(byte)] = "UInt8",
 
             [typeof(bool)] = "UInt8",
+
+            [typeof(Guid)] = "UUID",
         };
         protected override string GetColumnDbType(Type type)
         {
