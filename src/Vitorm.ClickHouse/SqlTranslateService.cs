@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 
 using Vit.Linq;
-using Vit.Linq.ExpressionTree.ComponentModel;
+using Vit.Linq.ExpressionNodes.ComponentModel;
 
 using Vitorm.Entity;
 using Vitorm.Sql.SqlTranslate;
@@ -209,8 +209,8 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
             string GetColumnSql(IColumnDescriptor column)
             {
-                var columnDbType = column.databaseType ?? GetColumnDbType(TypeUtil.GetUnderlyingType(column.type));
-                return $"  {DelimitIdentifier(column.columnName)} {(column.isNullable ? $"Nullable({columnDbType})" : columnDbType)}";
+                var columnDbType = column.columnDbType ?? GetColumnDbType(column);
+                return $"  {DelimitIdentifier(column.columnName)} {columnDbType}";
             }
         }
 
@@ -234,18 +234,24 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
             [typeof(byte)] = "UInt8",
 
             [typeof(bool)] = "UInt8",
+
+            [typeof(Guid)] = "UUID",
         };
+
+        protected override string GetColumnDbType(IColumnDescriptor column)
+        {
+            var columnDbType = GetColumnDbType(column.type);
+            if (column.isNullable) columnDbType = $"Nullable({columnDbType})";
+            return columnDbType;
+        }
         protected override string GetColumnDbType(Type type)
         {
             var underlyingType = TypeUtil.GetUnderlyingType(type);
 
-            if (!columnDbTypeMap.TryGetValue(underlyingType, out var dbType))
+            if (!columnDbTypeMap.TryGetValue(underlyingType, out var columnDbType))
                 throw new NotSupportedException("unsupported column type:" + type.Name);
 
-            if (type != underlyingType) dbType = $"Nullable({dbType})";
-            return dbType;
-
-            //if (type.Name.ToLower().Contains("int")) return "INTEGER";
+            return columnDbType;
         }
 
         #endregion
