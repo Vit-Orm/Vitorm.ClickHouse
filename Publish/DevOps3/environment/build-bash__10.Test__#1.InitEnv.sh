@@ -28,7 +28,7 @@ echo '#build-bash__10.Test__#1.InitEnv.sh -> #8 wait for containers to init'
 
 
 echo '#build-bash__10.Test__#1.InitEnv.sh -> #8.1 wait for ClickHouse to init' 
-docker run -it --rm --link vitorm-clickhouse curlimages/curl sh -c 'until curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "SELECT 1"; do echo waiting for ClickHouse; sleep 2; done;    curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "create database if not exists db_orm;";    curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "create database if not exists db_orm2;";    curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "create database if not exists db_orm22;";'
+docker run -t --rm --link vitorm-clickhouse curlimages/curl sh -c 'until curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "SELECT 1"; do echo waiting for ClickHouse; sleep 2; done;    curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "create database if not exists db_orm;";    curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "create database if not exists db_orm2;";    curl "http://vitorm-clickhouse:8123/?query=" -s --data-binary "create database if not exists db_orm22;";'
 
 
 #---------------------------------------------------------------------
