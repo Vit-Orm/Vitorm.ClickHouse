@@ -4,15 +4,15 @@ Vitorm.ClickHouse is a lightweight yet comprehensive ORM for ClickHouse that str
 Similar to Dapper in its lightweight design, Vitorm offers an easy-to-use, efficient interface for data access.     
 However, it doesn't stop there; Vitorm goes beyond basic ORM capabilities to provide a rich feature set akin to Entity Framework.     
 This means you get the best of both worlds: the performance and simplicity of Dapper with the robust features and flexibility of Entity Framework, making Vitorm an ideal choice for developers seeking a powerful yet streamlined ORM solution.
-> source address: [https://github.com/VitormLib/Vitorm.ClickHouse](https://github.com/VitormLib/Vitorm.ClickHouse "https://github.com/VitormLib/Vitorm.ClickHouse")        
+> source address: [https://github.com/Vit-Orm/Vitorm.ClickHouse](https://github.com/Vit-Orm/Vitorm.ClickHouse "https://github.com/Vit-Orm/Vitorm.ClickHouse")        
 
-![](https://img.shields.io/github/license/VitormLib/Vitorm.ClickHouse.svg)  
-![](https://img.shields.io/github/repo-size/VitormLib/Vitorm.ClickHouse.svg)  ![](https://img.shields.io/github/last-commit/VitormLib/Vitorm.ClickHouse.svg)  
+![](https://img.shields.io/github/license/Vit-Orm/Vitorm.ClickHouse.svg)  
+![](https://img.shields.io/github/repo-size/Vit-Orm/Vitorm.ClickHouse.svg)  ![](https://img.shields.io/github/last-commit/Vit-Orm/Vitorm.ClickHouse.svg)  
  
 
 | Build | NuGet |
 | -------- | -------- |
-|![](https://github.com/VitormLib/Vitorm.ClickHouse/workflows/ki_devops3/badge.svg) | [![](https://img.shields.io/nuget/v/Vitorm.ClickHouse.svg)](https://www.nuget.org/packages/Vitorm.ClickHouse) ![](https://img.shields.io/nuget/dt/Vitorm.ClickHouse.svg) |
+|![](https://github.com/Vit-Orm/Vitorm.ClickHouse/workflows/ki_devops3/badge.svg) | [![](https://img.shields.io/nuget/v/Vitorm.ClickHouse.svg)](https://www.nuget.org/packages/Vitorm.ClickHouse) ![](https://img.shields.io/nuget/dt/Vitorm.ClickHouse.svg) |
 
 
 
@@ -35,7 +35,7 @@ supported features:
 |  change database  |  ChangeDatabase   | change database to be connected  |   |
 | --- | --- | --- | --- |
 |  collection total count   |  TotalCount    |  Collection Total Count without Take and Skip   |   |
-|  collection total count and list  |  ToListAndTotalCount   | query List and TotalCount at on request  |   |
+|  collection total count and list  |  ToListAndTotalCount   | query List and TotalCount in one request  |   |
 |     |     |   |   |
 
 
@@ -349,4 +349,4 @@ namespace App
 ```
 
 
-[Test Example](https://github.com/VitormLib/Vitorm.ClickHouse/tree/master/test/Vitorm.ClickHouse.MsTest)    
+[Test Example](https://github.com/Vit-Orm/Vitorm.ClickHouse/tree/master/test/Vitorm.ClickHouse.MsTest)    
