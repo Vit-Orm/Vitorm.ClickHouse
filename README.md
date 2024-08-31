@@ -12,7 +12,7 @@ This means you get the best of both worlds: the performance and simplicity of Da
 
 | Build | NuGet |
 | -------- | -------- |
-|![](https://github.com/Vit-Orm/Vitorm.ClickHouse/workflows/ki_devops3/badge.svg) | [![](https://img.shields.io/nuget/v/Vitorm.ClickHouse.svg)](https://www.nuget.org/packages/Vitorm.ClickHouse) ![](https://img.shields.io/nuget/dt/Vitorm.ClickHouse.svg) |
+|![](https://github.com/Vit-Orm/Vitorm.ClickHouse/workflows/ki_devops3_build/badge.svg) | [![](https://img.shields.io/nuget/v/Vitorm.ClickHouse.svg)](https://www.nuget.org/packages/Vitorm.ClickHouse) ![](https://img.shields.io/nuget/dt/Vitorm.ClickHouse.svg) |
 
 
 
@@ -261,8 +261,8 @@ namespace App
             // #1 No need to init Vitorm.Data
 
             // #2 Create Table
-            Data.Drop<User>();
-            Data.Create<User>();
+            Data.TryDropTable<User>();
+            Data.TryCreateTable<User>();
 
             // #3 Insert Records
             Data.Add(new User { id = 1, name = "lith" });
@@ -306,32 +306,6 @@ namespace App
             }
 
             // #8 Transactions
-            {
-                using var dbContext = Data.DataProvider<User>().CreateSqlDbContext();
-                using var tran1 = dbContext.BeginTransaction();
-
-                dbContext.Update(new User { id = 4, name = "u4001" });
-
-                using (var tran2 = dbContext.BeginTransaction())
-                {
-                    dbContext.Update(new User { id = 4, name = "u4002" });
-                    // will rollback
-                }
-
-                using (var tran2 = dbContext.BeginTransaction())
-                {
-                    dbContext.Update(new User { id = 4, name = "u4002" });
-                    tran2.Rollback();
-                }
-
-                using (var tran2 = dbContext.BeginTransaction())
-                {
-                    dbContext.Update(new User { id = 4, name = "u4003" });
-                    tran2.Commit();
-                }
-
-                tran1.Commit();
-            }
         }
 
         // Entity Definition

@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\Versions.props" />
 
     <PropertyGroup>
         <pack>nuget</pack>
@@ -6,7 +7,6 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <Version>2.1.1</Version>
         <LangVersion>9.0</LangVersion>
     </PropertyGroup>
 
@@ -32,7 +32,7 @@
 
     <ItemGroup>
         <PackageReference Include="ClickHouse.Client" Version="7.7.3" />
-        <PackageReference Include="Vitorm" Version="[2.1.1, 2.2.0)" />
+        <PackageReference Include="Vitorm" Version="$(Vitorm_Version)"  />
     </ItemGroup>
 
 

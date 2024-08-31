@@ -11,6 +11,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7904FE51-04FF-4477-8E3A-CC340389EE32}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{05176905-A2A5-4015-9F04-2904506C902F}"
+	ProjectSection(SolutionItems) = preProject
+		src\Versions.props = src\Versions.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vitorm.ClickHouse", "src\Vitorm.ClickHouse\Vitorm.ClickHouse.csproj", "{853695CA-E3BF-492A-A20C-88122925AFC8}"
 EndProject
