@@ -1,16 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
-namespace Vitorm.MsTest
+namespace Vitorm.MsTest.CommonTest
 {
     public class User : Vitorm.MsTest.CommonTest.UserBase
     {
     }
-}
 
-
-namespace Vitorm.MsTest.CommonTest
-{
 
     [TestClass]
     public partial class Common_Test : UserTest<User>
