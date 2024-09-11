@@ -2,9 +2,9 @@
 
 using Vit.Linq;
 
-namespace Vitorm.MsTest
+namespace Vitorm.MsTest.CommonTest
 {
-    public abstract partial class UserTest<User> where User : Vitorm.MsTest.UserBase, new()
+    public abstract partial class UserTest<User>
     {
 
         public async Task Test_GetAsync()
