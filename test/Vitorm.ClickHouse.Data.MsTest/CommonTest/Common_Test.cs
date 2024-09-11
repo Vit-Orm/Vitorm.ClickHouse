@@ -1,20 +1,19 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using User = Vitorm.MsTest.ClickHouse.User;
 
-namespace Vitorm.MsTest.ClickHouse
+namespace Vitorm.MsTest
 {
-    public class User : Vitorm.MsTest.UserBase
+    public class User : Vitorm.MsTest.CommonTest.UserBase
     {
     }
 }
 
 
-namespace Vitorm.MsTest
+namespace Vitorm.MsTest.CommonTest
 {
 
     [TestClass]
-    public partial class ClickHouse_Test : UserTest<User>
+    public partial class Common_Test : UserTest<User>
     {
         [TestMethod]
         public void Test()

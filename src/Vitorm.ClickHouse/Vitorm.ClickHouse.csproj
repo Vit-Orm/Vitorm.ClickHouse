@@ -32,8 +32,19 @@
 
     <ItemGroup>
         <PackageReference Include="ClickHouse.Client" Version="7.7.3" />
+    
+
+    </ItemGroup>
+
+
+    <ItemGroup>
         <PackageReference Include="Vitorm" Version="$(Vitorm_Version)"  />
     </ItemGroup>
+
+
+    <!--<ItemGroup>
+      <ProjectReference Include="..\..\..\Vitorm\src\Vitorm\Vitorm.csproj" />
+    </ItemGroup>-->
 
 
 </Project>
