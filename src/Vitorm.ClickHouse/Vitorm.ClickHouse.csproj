@@ -32,8 +32,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ClickHouse.Client" Version="7.7.3" />
-        <PackageReference Include="Vitorm" Version="$(Vitorm_Version)"  />
+        <PackageReference Include="ClickHouse.Client" Version="7.8.0" />
+        <PackageReference Include="Vitorm" Version="$(Vitorm_Version)" />
     </ItemGroup>
 
 </Project>
