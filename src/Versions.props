@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
-        <Version>2.2.0</Version>
-        <Vitorm_Version>[2.2.0, 2.3.0)</Vitorm_Version>
+        <Version>2.2.1</Version>
+        <Vitorm_Version>[2.2.1, 2.3.0)</Vitorm_Version>
     </PropertyGroup>
 
     <PropertyGroup>
