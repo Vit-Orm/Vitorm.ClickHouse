@@ -6,6 +6,7 @@ using Vit.Linq;
 
 using Vitorm.ClickHouse;
 using Vitorm.Sql;
+using Vitorm.Sql.SqlExecute;
 
 namespace Vitorm
 {
