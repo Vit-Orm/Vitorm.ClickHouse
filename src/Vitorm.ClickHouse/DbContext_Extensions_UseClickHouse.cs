@@ -6,6 +6,7 @@ using Vit.Linq;
 
 using Vitorm.ClickHouse;
 using Vitorm.Sql;
+using Vitorm.Sql.SqlExecute;
 
 namespace Vitorm
 {
@@ -35,15 +36,15 @@ namespace Vitorm
         {
             public readonly static new SqlExecutorWithoutNull Instance = new();
 
-            public override int Execute(IDbConnection conn, string sql, IDictionary<string, object> param = null, IDbTransaction transaction = null, int? commandTimeout = null)
+            public override int Execute(IDbConnection conn, string sql, IDictionary<string, object> param = null, IDbTransaction transaction = null, int? commandTimeout = null, bool isProcedure = false)
             {
                 sql = ReplaceNullParameters(sql, param);
-                return base.Execute(conn, sql, param, transaction, commandTimeout);
+                return base.Execute(conn, sql, param, transaction, commandTimeout, isProcedure);
             }
-            public override object ExecuteScalar(IDbConnection conn, string sql, IDictionary<string, object> param = null, IDbTransaction transaction = null, int? commandTimeout = null)
+            public override object ExecuteScalar(IDbConnection conn, string sql, IDictionary<string, object> param = null, IDbTransaction transaction = null, int? commandTimeout = null, bool isProcedure = false)
             {
                 sql = ReplaceNullParameters(sql, param);
-                return base.ExecuteScalar(conn, sql, param, transaction, commandTimeout);
+                return base.ExecuteScalar(conn, sql, param, transaction, commandTimeout, isProcedure);
             }
 
             public string ReplaceNullParameters(string sql, IDictionary<string, object> param = null)

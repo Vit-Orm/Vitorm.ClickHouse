@@ -190,7 +190,7 @@ ORDER BY `id`;
             List<string> sqlFields = new();
 
             // #1 columns
-            entityDescriptor.allColumns?.ForEach(column => sqlFields.Add(GetColumnSql(column)));
+            entityDescriptor.properties?.ForEach(column => sqlFields.Add(GetColumnSql(column)));
 
             return $@"
 CREATE TABLE IF NOT EXISTS {DelimitTableName(entityDescriptor)} (
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS {DelimitTableName(entityDescriptor)} (
 ENGINE = MergeTree
 ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
 
-            string GetColumnSql(IColumnDescriptor column)
+            string GetColumnSql(IPropertyDescriptor column)
             {
                 var columnDbType = column.columnDbType ?? GetColumnDbType(column);
                 return $"  {DelimitIdentifier(column.columnName)} {columnDbType}";
@@ -230,7 +230,7 @@ ORDER BY  {DelimitIdentifier(entityDescriptor.key.columnName)};";
             [typeof(Guid)] = "UUID",
         };
 
-        protected override string GetColumnDbType(IColumnDescriptor column)
+        protected override string GetColumnDbType(IPropertyDescriptor column)
         {
             var columnDbType = GetColumnDbType(column.type);
             if (column.isNullable) columnDbType = $"Nullable({columnDbType})";
